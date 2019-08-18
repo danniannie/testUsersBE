@@ -13,7 +13,13 @@ app.get("/users", (req, res, next) => {
   return db
     .collection("userList")
     .get()
-    .then(snapshot => res.send(snapshot.docs.map(doc => doc.data())));
+    .then(snapshot => {
+      const users = snapshot.docs.map(doc => {
+        let data = { id: doc.id, data: doc.data() };
+        return data;
+      });
+      return res.send(users);
+    });
 });
 
 app.post("/users", (req, res, next) => {
@@ -23,7 +29,7 @@ app.post("/users", (req, res, next) => {
     .add(body)
     .then(documentSnapshot => {
       let data = documentSnapshot.data();
-      return res.status(200).send({ data });
+      return res.status(200).send({ data, id: documentSnapshot.id });
     });
 });
 
@@ -46,6 +52,12 @@ app.del("/users/:userID", (req, res, next) => {
     .then(() => res.status(200).send({ message: "user deleted" }));
 });
 
-//   .patch(updateUser)
+app.patch("/users/:userID", (req, res, next) => {
+  return db
+    .collection("userList")
+    .doc(req.params.userID)
+    .update(req.body)
+    .then(() => res.status(200).send({ message: "user updated" }));
+});
 
 exports.app = functions.https.onRequest(app);
