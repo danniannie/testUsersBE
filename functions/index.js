@@ -20,8 +20,7 @@ app.post("/users", (req, res, next) => {
   const body = req.body;
   return db
     .collection("userList")
-    .doc(body.email)
-    .set(body)
+    .add(body)
     .then(documentSnapshot => {
       let data = documentSnapshot.data();
       return res.status(200).send({ data });
