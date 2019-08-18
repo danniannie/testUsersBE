@@ -33,7 +33,10 @@ app.get("/users/:userID", (req, res, next) => {
     .collection("userList")
     .doc(req.params.userID)
     .get()
-    .then(snapshot => res.status(200).send(snapshot));
+    .then(snapshot => {
+      let data = snapshot.data();
+      return res.status(200).send({ data });
+    });
 });
 
 app.del("/users/:userID", (req, res, next) => {
